@@ -1,5 +1,10 @@
 # testable-federation
-Test your Apollo GraphQL Gateway / Federation micro services. 
+Test your Apollo GraphQL Gateway / Federation micro services. With this package you don't have to worry about the whole complexity that comes with joining the GraphQL federated micro services and preparing them for testing. 
+
+Install it with 
+```bash 
+npm --save-dev testable-federation
+```
 
 Example Usage, for the [Federation Demo From Apollo](https://github.com/apollographql/federation-demo).
 
