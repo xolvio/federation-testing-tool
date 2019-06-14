@@ -1,0 +1,29 @@
+{
+  "name": "testable-federation",
+  "version": "0.0.1",
+  "description": "Test your Apollo GraphQL Gateway / Federation micro services.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "peerDependencies": {
+    "@apollo/gateway": "0.x",
+    "@apollo/federation": "0.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheBrainFamily/testable-federation.git"
+  },
+  "keywords": [
+    "GraphQL",
+    "testing",
+    "Apollo",
+    "Gateway"
+  ],
+  "author": "Lukasz Gandecki <lgandecki@thebrain.pro>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TheBrainFamily/testable-federation/issues"
+  },
+  "homepage": "https://github.com/TheBrainFamily/testable-federation#readme"
+}
