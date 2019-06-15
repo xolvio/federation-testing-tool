@@ -3,7 +3,7 @@ Test your Apollo GraphQL Gateway / Federation micro services. With this package 
 
 Install it with 
 ```bash 
-npm --save-dev federation-testing-library
+npm --save-dev federation-testing-tool
 ```
 
 Example Usage, for the [Federation Demo From Apollo](https://github.com/apollographql/federation-demo).
@@ -11,7 +11,7 @@ Example Usage, for the [Federation Demo From Apollo](https://github.com/apollogr
 Demo with the whole repositorium, code examples, and walk-through tutorial coming this weekend! Stay tuned.
 
 ```javascript
-const { executeGraphql, setupSchema } = require("federation-testing-library");
+const { executeGraphql, setupSchema } = require("federation-testing-tool");
 const { gql } = require("apollo-server");
 
 const { typeDefs } = require("./schema");
