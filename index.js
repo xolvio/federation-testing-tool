@@ -62,13 +62,13 @@ module.exports = {
         });
         addResolversToSchema(service.schema, resolvers);
       }
+      addMockFunctionsToSchema({
+        schema: service.schema,
+        preserveResolvers: true,
+        mocks
+      });
     });
 
-    addMockFunctionsToSchema({
-      schema: serviceMap.products.schema,
-      preserveResolvers: true,
-      mocks
-    });
     const operationContext = buildOperationContext(schema, query);
     const queryPlan = buildQueryPlan(operationContext);
 
