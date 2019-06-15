@@ -49,7 +49,7 @@ module.exports = {
     }
     schema = composed.schema;
   },
-  executeGraphql: ({ query, variables, context, mocks }) => {
+  executeGraphql: ({ query, mutation, variables, context, mocks }) => {
     Object.values(serviceMap).forEach((service) => {
       let resolvers = {}
       if (!service.__underTest__) {
@@ -69,7 +69,7 @@ module.exports = {
       });
     });
 
-    const operationContext = buildOperationContext(schema, query);
+    const operationContext = buildOperationContext(schema, query || mutation);
     const queryPlan = buildQueryPlan(operationContext);
 
     return executeQueryPlan(
