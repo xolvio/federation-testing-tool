@@ -49,7 +49,7 @@ module.exports = {
     }
     schema = composed.schema;
   },
-  executeGraphql: ({ query, mutation, variables, context, mocks }) => {
+  executeGraphql: ({ query, mutation, variables, context, mocks = {} }) => {
     Object.values(serviceMap).forEach((service) => {
       let resolvers = {}
       if (!service.__underTest__) {
