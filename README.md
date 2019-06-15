@@ -14,31 +14,27 @@ Demo with the whole repositorium, code examples, and walk-through tutorial comin
 const { executeGraphql, setupSchema } = require("testable-federation");
 const { gql } = require("apollo-server");
 
-// This setup should happen in an external, common test helper, so the actual test is clean and simple
-
 const { typeDefs } = require("./schema");
 const { resolvers } = require("./resolvers");
 
 const { typeDefs: typeDefsProducts } = require("../products/schema");
-const { resolvers: resolversProducts } = require("../products/resolvers");
 
 const services = [
-  { inventory: { typeDefs, resolvers } },
+  { inventory: { typeDefs, resolvers, underTest: true } },
   {
     products: {
-      typeDefs: typeDefsProducts,
-      resolvers: resolversProducts
+      typeDefs: typeDefsProducts
     }
   }
 ];
 
 beforeAll(() => {
-  setupSchema(services)
-})
+  setupSchema(services);
+});
 
-test("simple case with resolveReference", async () => {
+describe("Based on the data from the external service", () => {
   const query = gql`
-    { 
+    {
       topProducts {
         name
         inStock
@@ -47,26 +43,44 @@ test("simple case with resolveReference", async () => {
     }
   `;
 
-  const { data } = await executeGraphql(query);
-  
-  expect(data.topProducts[0]).toEqual({
-    name: "Table",
-    inStock: true,
-    shippingEstimate: 50
+  it("should calculate the shipping estimate", async () => {
+    const mocks = {
+      Product: () => ({
+        upc: "1",
+        name: "Table",
+        weight: 10,
+        price: 10,
+        elo: "",
+        __typename: "Product"
+      })
+    };
+
+    const result = await executeGraphql({ query, mocks });
+    expect(result.data.topProducts[0]).toEqual({
+      name: "Table",
+      inStock: true,
+      shippingEstimate: 5
+    });
+  });
+  it("should set the shippingEstimate at 0 for an expensive item", async () => {
+    const mocks = {
+      Product: () => ({
+        upc: "1",
+        name: "Table",
+        weight: 10,
+        price: 14000,
+        elo: "",
+        __typename: "Product"
+      })
+    };
+
+    const result = await executeGraphql({ query, mocks });
+    expect(result.data.topProducts[0]).toEqual({
+      name: "Table",
+      inStock: true,
+      shippingEstimate: 0
+    });
   });
 });
 
-test("simple mutation", async () => {
-  const mutation = gql`
-    mutation addProduct($name: String!) {
-      addProduct(name: $name)
-    }
-  `;
-
-  const variables = { name: "New ProductName" }
-  const { data } = await executeGraphql(mutation, variables);
-  
-  expect(data).toEqual({ addProduct: "Added product: New ProductName" });
-
-});
 ```

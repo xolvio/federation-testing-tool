@@ -4,6 +4,8 @@ const {
   buildQueryPlan,
   executeQueryPlan
 } = require("@apollo/gateway");
+const { addMockFunctionsToSchema } = require("graphql-tools");
+const { addResolversToSchema } = require("apollo-graphql");
 
 const { buildFederatedSchema, composeServices } = require("@apollo/federation");
 
@@ -29,24 +31,44 @@ module.exports = {
   setupSchema: (services) => {
     services.forEach(service => {
       let serviceName = Object.keys(service)[0];
-      serviceMap[serviceName] = buildLocalService([
-        service[serviceName]
-      ]);
+      serviceMap[serviceName] = buildLocalService([service[serviceName]]);
+      serviceMap[serviceName].__underTest__ = service[serviceName].underTest
     });
 
-    let composed = composeServices(
-      Object.entries(serviceMap).map(([serviceName, service]) => ({
+    let mapForComposeServices = Object.entries(serviceMap).map(
+      ([serviceName, service]) => ({
         name: serviceName,
         typeDefs: service.sdl()
-      }))
+      })
     );
+
+    let composed = composeServices(mapForComposeServices);
 
     if (composed.errors && composed.errors.length > 0) {
       throw new Error(JSON.stringify(composed.errors));
     }
     schema = composed.schema;
   },
-  executeGraphql: (query, variables, context) => {
+  executeGraphql: ({ query, variables, context, mocks }) => {
+    Object.values(serviceMap).forEach((service) => {
+      let resolvers = {}
+      if (!service.__underTest__) {
+        Object.entries(mocks).forEach(([type, value]) => {
+          resolvers[type] = {
+            __resolveReference() {
+              return value();
+            }
+          };
+        });
+        addResolversToSchema(service.schema, resolvers);
+      }
+    });
+
+    addMockFunctionsToSchema({
+      schema: serviceMap.products.schema,
+      preserveResolvers: true,
+      mocks
+    });
     const operationContext = buildOperationContext(schema, query);
     const queryPlan = buildQueryPlan(operationContext);
 
