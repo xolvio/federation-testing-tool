@@ -61,12 +61,12 @@ module.exports = {
           };
         });
         addResolversToSchema(service.schema, resolvers);
+        addMockFunctionsToSchema({
+          schema: service.schema,
+          preserveResolvers: true,
+          mocks
+        });
       }
-      addMockFunctionsToSchema({
-        schema: service.schema,
-        preserveResolvers: true,
-        mocks
-      });
     });
 
     const operationContext = buildOperationContext(schema, query || mutation);

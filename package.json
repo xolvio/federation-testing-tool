@@ -1,10 +1,11 @@
 {
   "name": "federation-testing-tool",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Test your Apollo GraphQL Gateway / Federation micro services.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "pretest": "patch-package"
   },
   "peerDependencies": {
     "@apollo/gateway": "0.x",
@@ -25,5 +26,13 @@
   "bugs": {
     "url": "https://github.com/TheBrainFamily/federation-testing-tool/issues"
   },
-  "homepage": "https://github.com/TheBrainFamily/federation-testing-tool#readme"
+  "homepage": "https://github.com/TheBrainFamily/federation-testing-tool#readme",
+  "devDependencies": {
+    "@apollo/federation": "^0.6.2",
+    "@apollo/gateway": "0.6.6",
+    "graphql": "^14.3.1",
+    "graphql-tag": "^2.10.1",
+    "jest": "^24.8.0",
+    "patch-package": "^6.1.2"
+  }
 }
