@@ -11,7 +11,7 @@ Example Usage, for the [Federation Demo From Apollo](https://github.com/apollogr
 Demo with the whole repositorium, code examples, and walk-through tutorial coming this weekend! Stay tuned.
 
 ```javascript
-const { executeGraphql, setupSchema } = require("federation-testing-tool");
+const { executeGraphql } = require("federation-testing-tool");
 const { gql } = require("apollo-server");
 
 const { typeDefs } = require("./schema");
@@ -27,10 +27,6 @@ const services = [
     }
   }
 ];
-
-beforeAll(() => {
-  setupSchema(services);
-});
 
 describe("Based on the data from the external service", () => {
   const query = gql`
@@ -55,7 +51,7 @@ describe("Based on the data from the external service", () => {
       })
     };
 
-    const result = await executeGraphql({ query, mocks });
+    const result = await executeGraphql({ query, mocks, services });
     expect(result.data.topProducts[0]).toEqual({
       name: "Table",
       inStock: true,
@@ -74,7 +70,7 @@ describe("Based on the data from the external service", () => {
       })
     };
 
-    const result = await executeGraphql({ query, mocks });
+    const result = await executeGraphql({ query, mocks, services });
     expect(result.data.topProducts[0]).toEqual({
       name: "Table",
       inStock: true,
