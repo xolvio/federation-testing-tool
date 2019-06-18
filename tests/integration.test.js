@@ -1,5 +1,5 @@
 const gql = require("graphql-tag");
-const { executeGraphql, setupSchema } = require("../");
+const { executeGraphql } = require("../");
 
 const typeDefsProducts = gql`
   extend type Query {
@@ -64,12 +64,9 @@ const services = [
   }
 ];
 
-// if you run setupSchema in beforeEach, you can be sure every test starts from a clean schema-state
-// the tests will be a bit slower (20ms vs 10ms) though. In typical situation I suspect the clean state won't be necessary.
 let inventory;
 
 beforeEach(() => {
-  setupSchema(services);
   inventory = [
     { upc: "1", inStock: true },
     { upc: "2", inStock: false },
@@ -100,7 +97,7 @@ describe("Based on the mocked data from the external service", () => {
       })
     };
 
-    const result = await executeGraphql({ query, mocks });
+    const result = await executeGraphql({ query, mocks, services });
     expect(result.data.topProducts[0]).toEqual({
       name: "Table",
       inStock: true,
@@ -119,7 +116,7 @@ describe("Based on the mocked data from the external service", () => {
       })
     };
 
-    const result = await executeGraphql({ query, mocks });
+    const result = await executeGraphql({ query, mocks, services });
     expect(result.data.topProducts[0]).toEqual({
       name: "Table",
       inStock: true,
@@ -128,9 +125,7 @@ describe("Based on the mocked data from the external service", () => {
   });
 
   it("should not fail when the mocks are not explicit", async () => {
-    // To start from a clean state and make sure the mocks are reset
-    setupSchema(services);
-    const result = await executeGraphql({ query });
+    const result = await executeGraphql({ query, services });
     const product = result.data.topProducts[0];
     expect(product).toMatchObject({
       name: "Hello World"
@@ -165,24 +160,7 @@ test("should allow for using mutations, going across the services", async () => 
     inStock: false
   };
 
-  const newServices = [
-    {
-      inventory: {
-        typeDefs: typeDefsInventory,
-        resolvers: resolversInventory,
-        underTest: true
-      }
-    },
-    {
-      products: {
-        typeDefs: typeDefsProducts
-      }
-    }
-  ];
-
-  setupSchema(newServices);
-
-  const result = await executeGraphql({ mutation, variables, mocks });
+  const result = await executeGraphql({ mutation, variables, mocks, services });
   const product = result.data.addInventoryForProduct;
   expect(product.inStock).toEqual(false);
   expect(product.name).toEqual("Hello");
@@ -229,9 +207,11 @@ test("should allow for using mutations, having all resolvers implemented", async
     }
   ];
 
-  setupSchema(newServices);
-
-  const result = await executeGraphql({ mutation, variables });
+  const result = await executeGraphql({
+    mutation,
+    variables,
+    services: newServices
+  });
   const product = result.data.addInventoryForProduct;
   expect(product.inStock).toEqual(false);
   expect(product.name).toEqual("the correct name");
@@ -260,8 +240,6 @@ test("should allow mocking the context and passing it to the resolvers", async (
     }
   ];
 
-  setupSchema(newServices);
-
   const mutation = gql`
     mutation returnContext {
       returnContext
@@ -269,10 +247,12 @@ test("should allow mocking the context and passing it to the resolvers", async (
   `;
   const context = {
     stringToBeReturned: "Hello Universe!"
-  }
-  const result = await executeGraphql({ mutation, context });
+  };
+  const result = await executeGraphql({
+    mutation,
+    context,
+    services: newServices
+  });
 
-
-  expect(result.data.returnContext).toEqual("Hello Universe!")
-
+  expect(result.data.returnContext).toEqual("Hello Universe!");
 });
