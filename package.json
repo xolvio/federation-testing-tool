@@ -36,5 +36,8 @@
     "jest": "^24.8.0",
     "patch-package": "^6.1.2",
     "semantic-release": "^15.13.16"
+  },
+  "dependencies": {
+    "clone": "^2.1.2"
   }
 }
