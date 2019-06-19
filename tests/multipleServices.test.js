@@ -91,9 +91,7 @@ describe("Based on the mocked data from the external service", () => {
         upc: "1",
         name: "Table",
         weight: 10,
-        price: 10,
-        elo: "",
-        __typename: "Product"
+        price: 10
       })
     };
 
@@ -110,9 +108,7 @@ describe("Based on the mocked data from the external service", () => {
         upc: "1",
         name: "Table",
         weight: 10,
-        price: 14000,
-        elo: "",
-        __typename: "Product"
+        price: 14000
       })
     };
 
@@ -141,9 +137,7 @@ test("should allow for using mutations, going across the services", async () => 
       upc: "3",
       name: "Hello",
       weight: 10,
-      price: 14000,
-      elo: "",
-      __typename: "Product"
+      price: 14000
     })
   };
 
