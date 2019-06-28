@@ -1,8 +1,6 @@
 # federation-testing-tool
 Test your Apollo GraphQL Gateway / Federation micro services. With this package you don't have to worry about the whole complexity that comes with joining the GraphQL federated micro services and preparing them for testing. 
 
-### NOTE: THIS IS NOT READY YET. I'M OPEN FOR FEEDBACK, BUT PLEASE BE AWARE THAT THE API KEEPS CHANGING EVERYDAY. I DIDN'T EXPECT PEOPLE TO START USING IT! I PLAN TO RELEASE A TUTORIAL THIS COMING WEEKEND AND BY THAT TIME THE PACKAGE WILL BE READY. STAY TUNED.
-
 Install it with 
 ```bash 
 npm install --save-dev federation-testing-tool
