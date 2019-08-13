@@ -53,8 +53,7 @@ const services = [
   {
     inventory: {
       typeDefs: typeDefsInventory,
-      resolvers: resolversInventory,
-      underTest: true
+      resolvers: resolversInventory
     }
   },
   {
@@ -179,8 +178,7 @@ test("should allow for using mutations, having all resolvers implemented", async
     {
       inventory: {
         typeDefs: typeDefsInventory,
-        resolvers: resolversInventory,
-        underTest: true
+        resolvers: resolversInventory
       }
     },
     {
@@ -196,8 +194,7 @@ test("should allow for using mutations, having all resolvers implemented", async
           }
         },
         typeDefs: typeDefsProducts
-      },
-      underTest: true
+      }
     }
   ];
 
@@ -223,8 +220,7 @@ test("should allow mocking the context and passing it to the resolvers", async (
           Mutation: {
             returnContext: (_, args, context) => context.stringToBeReturned
           }
-        },
-        underTest: true
+        }
       }
     },
     {

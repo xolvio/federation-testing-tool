@@ -81,7 +81,7 @@ const setupSchema = serviceOrServices => {
         serviceUnderTest: {
           resolvers: serviceOrServices.resolvers,
           typeDefs: serviceOrServices.typeDefs,
-          underTest: true
+          addMocks: serviceOrServices.addMocks
         }
       }
     ];
@@ -96,8 +96,11 @@ const setupSchema = serviceOrServices => {
   let serviceMap = {};
   services.forEach(service => {
     let serviceName = Object.keys(service)[0];
+    if (!service[serviceName].resolvers) {
+      service[serviceName].addMocks = true;
+    }
     serviceMap[serviceName] = buildLocalService([service[serviceName]]);
-    serviceMap[serviceName].__underTest__ = service[serviceName].underTest;
+    serviceMap[serviceName].__addMocks__ = service[serviceName].addMocks;
   });
 
   let mapForComposeServices = Object.entries(serviceMap).map(
@@ -118,7 +121,7 @@ const setupSchema = serviceOrServices => {
 function setupMocks(serviceMap, mocks) {
   Object.values(serviceMap).forEach(service => {
     let resolvers = {};
-    if (!service.__underTest__) {
+    if (service.__addMocks__) {
       Object.entries(mocks).forEach(([type, value]) => {
         resolvers[type] = {
           __resolveReference() {
@@ -174,16 +177,16 @@ function validateArguments(
 }
 
 const executeGraphql = ({
-                          query,
-                          mutation,
-                          variables,
-                          context,
-                          services,
-                          mocks = {},
-                          schema,
-                          serviceMap,
-                          service
-                        }) => {
+  query,
+  mutation,
+  variables,
+  context,
+  services,
+  mocks = {},
+  schema,
+  serviceMap,
+  service
+}) => {
   validateArguments(services, service, schema, serviceMap, query, mutation);
 
   if (services || service) {
