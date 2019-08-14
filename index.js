@@ -35,7 +35,9 @@ function prepareProviderService(service) {
   const typeDefsForMockedService = clone(service.typeDefs);
 
   typeDefsForMockedService.definitions = typeDefsForMockedService.definitions
-    .filter(d => d.name.value !== "Query" && d.name.value !== "Mutation")
+    .filter(
+      d => d.name && d.name.value !== "Query" && d.name.value !== "Mutation"
+    )
     .filter(d => d.kind === "ObjectTypeExtension");
 
   typeDefsForMockedService.definitions.forEach(def => {
