@@ -14,6 +14,8 @@ const {
 } = require("@apollo/federation");
 const clone = require("clone");
 const gql = require("graphql-tag");
+const cloneDeepWith = require("lodash.clonedeepwith");
+const isFunction = require("lodash.isfunction");
 
 const {
   buildContextsPerService
@@ -38,9 +40,8 @@ function buildRequestContext(variables, singleContext, contextsPerService) {
       {
         get: (obj, prop) => {
           const trace = stackTrace.get();
-
-          if (trace[1].getFunction() && trace[1].getFunction().__service) {
-            return contextsPerService[trace[1].getFunction().__service][prop];
+          if (trace[1].getFunction() && trace[1].getFunction().__service__) {
+            return contextsPerService[trace[1].getFunction().__service__][prop];
           }
           return prop in obj ? obj[prop] : null;
         }
@@ -237,6 +238,10 @@ const executeGraphql = ({
     ? buildContextsPerService(services)
     : null;
 
+  if (services) {
+    addServiceInformationToResolvers(services);
+  }
+
   return execute(
     schema,
     query,
@@ -247,6 +252,20 @@ const executeGraphql = ({
     contextsPerService
   );
 };
+
+function addServiceInformationToResolvers(services) {
+  services.forEach(s => {
+    const serviceName = Object.keys(s)[0];
+    if (s[serviceName].resolvers) {
+      s[serviceName].resolvers = cloneDeepWith(s[serviceName].resolvers, el => {
+        if (isFunction(el)) {
+          el.__service__ = serviceName;
+          return el;
+        }
+      });
+    }
+  });
+}
 
 module.exports = {
   setupSchema,

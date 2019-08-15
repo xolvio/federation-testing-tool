@@ -13,58 +13,34 @@ const secondTypeDefs = gql`
   }
 `;
 
-const firstResolvesr = {
+const firstResolvers = {
   Query: {
-    getFirstString: (_, args, context) => {
-      try {
-        console.log("GOZDECKI context.getSome()", context.getSome())
-      } catch(e) {
-        console.log("GOZDECKI e", e)
-      }
-      return context.getSome();
+    getFirstString: async (_, args, context) => {
+      const value = await context.getSomeString();
+      return value;
     }
   }
 };
-var stackTrace = require('stack-trace');
+
 const secondResolvers = {
   Query: {
-    getSecondString: (_, args, context, info) => {
-      return context.getSomethingElse();
+    getSecondString: async (_, args, context, info) => {
+      return context.getSomeString();
     }
   }
 };
 
-secondResolvers.Query.getSecondString.__service = "products"
-firstResolvesr.Query.getFirstString.__service = "inventory"
-
-// var stackTrace = require('stack-trace');
-
+const wait = () => new Promise(resolve => setTimeout(() => resolve(), 0));
 
 const firstContext = {
-  getSome: () => {
-    var trace = stackTrace.get();
-    // console.log("GOZDECKI trace.length", trace.length)
-    trace.forEach((t, index) => {
-      if (t.getThis()) {
-        // console.log("GOZDECKI ", index)
-        // console.log("GOZDECKI t.getThis()", t.getThis())
-      }
-      if (t.getFileName()) {
-        // console.log("GOZDECKI ", index)
-        // console.log("GOZDECKI t.fileName()", t.getFileName())
-      }
-    })
+  getSomeString: async () => {
+    await wait();
     return "first string";
   }
 };
 
 const secondContext = {
-  getSomethingElse: function () {
-    var trace = stackTrace.get();
-
-    console.log(trace[1].getFunction().__service)
-    // console.log("GOZDECKI arguments.callee.caller.name", arguments.callee.caller.__name)
-    // console.log("GOZDECKI this", this)
+  getSomeString: function() {
     return "second string";
   }
 };
@@ -73,7 +49,7 @@ const services = [
   {
     inventory: {
       typeDefs: firstTypeDefs,
-      resolvers: firstResolvesr
+      resolvers: firstResolvers
     }
   },
   {
@@ -118,7 +94,7 @@ const servicesWithContext = [
   {
     inventory: {
       typeDefs: firstTypeDefs,
-      resolvers: firstResolvesr,
+      resolvers: firstResolvers,
       context: firstContext
     }
   },
@@ -152,6 +128,3 @@ test("second string with merged context", async () => {
 
   expect(result.data.getSecondString).toEqual("second string");
 });
-
-
-// try async/await
