@@ -36,6 +36,9 @@
     "semantic-release": "^15.13.16"
   },
   "dependencies": {
-    "clone": "^2.1.2"
+    "clone": "^2.1.2",
+    "lodash.clonedeepwith": "^4.5.0",
+    "lodash.isfunction": "^3.0.9",
+    "stack-trace": "0.0.10"
   }
 }
