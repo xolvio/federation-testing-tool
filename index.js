@@ -1,3 +1,4 @@
+const stackTrace = require("stack-trace");
 const {
   LocalGraphQLDataSource,
   buildOperationContext,
@@ -14,12 +15,39 @@ const {
 const clone = require("clone");
 const gql = require("graphql-tag");
 
+const {
+  buildContextsPerService
+} = require("./helpers/buildContextsPerService");
+
 function buildLocalService(modules) {
   const schema = buildFederatedSchema(modules);
   return new LocalGraphQLDataSource(schema);
 }
 
-function buildRequestContext(variables, context) {
+const isEmpty = obj =>
+  !obj || (Object.entries(obj).length === 0 && obj.constructor === Object);
+
+function buildRequestContext(variables, singleContext, contextsPerService) {
+  let context;
+
+  if (isEmpty(contextsPerService)) {
+    context = singleContext;
+  } else {
+    context = new Proxy(
+      {},
+      {
+        get: (obj, prop) => {
+          const trace = stackTrace.get();
+
+          if (trace[1].getFunction() && trace[1].getFunction().__service) {
+            return contextsPerService[trace[1].getFunction().__service][prop];
+          }
+          return prop in obj ? obj[prop] : null;
+        }
+      }
+    );
+  }
+
   return {
     cache: undefined,
     context,
@@ -141,14 +169,22 @@ function setupMocks(serviceMap, mocks) {
   });
 }
 
-function execute(schema, query, mutation, serviceMap, variables, context) {
+function execute(
+  schema,
+  query,
+  mutation,
+  serviceMap,
+  variables,
+  context,
+  contextsPerService
+) {
   const operationContext = buildOperationContext(schema, query || mutation);
   const queryPlan = buildQueryPlan(operationContext);
 
   return executeQueryPlan(
     queryPlan,
     serviceMap,
-    buildRequestContext(variables, context),
+    buildRequestContext(variables, context, contextsPerService),
     operationContext
   );
 }
@@ -197,7 +233,19 @@ const executeGraphql = ({
 
   setupMocks(serviceMap, mocks);
 
-  return execute(schema, query, mutation, serviceMap, variables, context);
+  const contextsPerService = services
+    ? buildContextsPerService(services)
+    : null;
+
+  return execute(
+    schema,
+    query,
+    mutation,
+    serviceMap,
+    variables,
+    context,
+    contextsPerService
+  );
 };
 
 module.exports = {

@@ -36,6 +36,7 @@
     "semantic-release": "^15.13.16"
   },
   "dependencies": {
-    "clone": "^2.1.2"
+    "clone": "^2.1.2",
+    "stack-trace": "0.0.10"
   }
 }
