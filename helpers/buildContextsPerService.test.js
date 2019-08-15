@@ -1,4 +1,4 @@
-import { buildContextsPerService } from "./buildContextsPerService";
+const { buildContextsPerService } = require("./buildContextsPerService");
 
 test("works when with contexts", () => {
   const servicesWithContext = [
