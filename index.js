@@ -36,12 +36,19 @@ function buildRequestContext(variables, singleContext, contextsPerService) {
     context = singleContext;
   } else {
     context = new Proxy(
-      {},
+      {___this_is_a_proxy_so_the_console_log_is_useless: ''},
       {
         get: (obj, prop) => {
           const trace = stackTrace.get();
+
           if (trace[1].getFunction() && trace[1].getFunction().__service__) {
-            return contextsPerService[trace[1].getFunction().__service__][prop];
+            const serviceContext = contextsPerService[trace[1].getFunction().__service__];
+
+            if (isFunction(serviceContext)) {
+              return serviceContext()[prop]
+            } else {
+              return serviceContext[prop];
+            }
           }
           return prop in obj ? obj[prop] : null;
         }
