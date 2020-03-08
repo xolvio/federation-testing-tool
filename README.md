@@ -8,9 +8,7 @@ npm install --save-dev federation-testing-tool
 
 Example Usage, for the [Federation Demo From Apollo](https://github.com/apollographql/federation-demo).
 
-Demo with the whole repositorium, code examples, and walk-through tutorial coming soon! Stay tuned.
-
-![data flow](https://cdn-images-1.medium.com/max/1200/1*z8EJo-cCafi7tdyxOvW2_w.png)
+![data flow](https://xolvio.s3.amazonaws.com/376674669.png)
 
 Test services in isolation:
 ```javascript
