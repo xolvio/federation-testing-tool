@@ -3,7 +3,6 @@ const {
   LocalGraphQLDataSource,
   buildOperationContext,
   buildQueryPlan,
-  executeQueryPlan
 } = require("@apollo/gateway");
 const { addMockFunctionsToSchema } = require("graphql-tools");
 const { addResolversToSchema } = require("apollo-graphql");
@@ -16,6 +15,7 @@ const clone = require("clone");
 const gql = require("graphql-tag");
 const cloneDeepWith = require("lodash.clonedeepwith");
 const isFunction = require("lodash.isfunction");
+const { executeQueryPlan } = require("./helpers/executeQueryPlan")
 
 const {
   buildContextsPerService
@@ -215,7 +215,7 @@ function validateArguments(
   }
 }
 
-const executeGraphql = ({
+const executeGraphql = async ({
   query,
   mutation,
   variables,
@@ -242,15 +242,37 @@ const executeGraphql = ({
     addServiceInformationToResolvers(services);
   }
 
-  return execute(
-    schema,
-    query,
-    mutation,
-    serviceMap,
-    variables,
-    context,
-    contextsPerService
-  );
+
+  const prepareError = new Error("");
+  const splitLines = prepareError.stack.split("\n").slice(2);
+  let result;
+  try {
+    result = await execute(
+      schema,
+      query,
+      mutation,
+      serviceMap,
+      variables,
+      context,
+      contextsPerService
+    );
+    if (result.errors) {
+      if (result.errors.length === 1) {
+        result.errors[0].message = result.errors[0].message + `, path: ${result.errors[0].path}`
+        throw result.errors[0];
+      } else {
+        throw new Error(result.errors.map((e) => `${e.message}, path: ${e.path}`).join(","));
+      }
+    }
+  } catch (e) {
+    const smallStack = e.stack.split("\n");
+    e.stack = [...smallStack, ...splitLines]
+      .filter((l) => l.indexOf("node_modules") === -1)
+      .join("\n");
+    e.message = e.message.split("\n")[0];
+    throw e;
+  }
+  return result;
 };
 
 function addServiceInformationToResolvers(services) {
