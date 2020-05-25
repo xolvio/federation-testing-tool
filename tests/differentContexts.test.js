@@ -114,7 +114,6 @@ test("first string with merged context", async () => {
     }
   `;
   const result = await executeGraphql({ services: servicesWithContext, query });
-
   expect(result.data.getFirstString).toEqual("first string");
 });
 

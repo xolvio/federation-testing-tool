@@ -14,6 +14,7 @@ const typeDefsProducts = gql`
   }
 `;
 
+
 const typeDefsInventory = gql`
   extend type Mutation {
     addInventoryForProduct(upc: String!, inStock: Boolean): Product
@@ -24,7 +25,7 @@ const typeDefsInventory = gql`
     weight: Int @external
     price: Int @external
     inStock: Boolean
-    shippingEstimate: Int @requires(fields: "price weight")
+    shippingEstimate: Float @requires(fields: "price weight")
   }
 `;
 
@@ -120,7 +121,9 @@ describe("Based on the mocked data from the external service", () => {
   });
 
   it("should not fail when the mocks are not explicit", async () => {
+
     const result = await executeGraphql({ query, services });
+
     const product = result.data.topProducts[0];
     expect(product).toMatchObject({
       name: "Hello World"
