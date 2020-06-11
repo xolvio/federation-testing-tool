@@ -75,7 +75,6 @@ describe("Based on the data from the external service", () => {
     };
 
     const result = await executeGraphql({ query, mocks, service });
-    console.log("MICHAL: result", result);
     expect(result.data._getProduct.shippingEstimate).toEqual(5);
   });
 });
