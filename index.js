@@ -4,8 +4,7 @@ const {
   buildOperationContext,
   buildQueryPlan,
 } = require("@apollo/gateway");
-const { addMockFunctionsToSchema } = require("graphql-tools");
-const { addResolversToSchema } = require("apollo-graphql");
+const { addMocksToSchema, addResolversToSchema } = require("graphql-tools");
 const { print } = require("graphql");
 const {
   buildFederatedSchema,
@@ -151,8 +150,12 @@ const setupSchema = serviceOrServices => {
 
 function setupMocks(serviceMap, mocks) {
   Object.values(serviceMap).forEach(service => {
+
+
     let resolvers = {};
     if (service.__addMocks__) {
+      console.log(service.schema)
+
       Object.entries(mocks).forEach(([type, value]) => {
         resolvers[type] = {
           __resolveReference() {
@@ -160,12 +163,15 @@ function setupMocks(serviceMap, mocks) {
           }
         };
       });
-      addResolversToSchema(service.schema, resolvers);
-      addMockFunctionsToSchema({
+      console.log("MICHAL: mocks", mocks);
+      service.schema = addResolversToSchema(service.schema, resolvers);
+      service.schema = addMocksToSchema({
         schema: service.schema,
         preserveResolvers: true,
         mocks
       });
+      console.log("MICHAL: service.schema", service.schema);
+
     }
   });
 }
