@@ -163,14 +163,12 @@ function setupMocks(serviceMap, mocks) {
           }
         };
       });
-      console.log("MICHAL: mocks", mocks);
       service.schema = addResolversToSchema(service.schema, resolvers);
       service.schema = addMocksToSchema({
         schema: service.schema,
         preserveResolvers: true,
         mocks
       });
-      console.log("MICHAL: service.schema", service.schema);
 
     }
   });
