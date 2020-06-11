@@ -154,7 +154,6 @@ function setupMocks(serviceMap, mocks) {
 
     let resolvers = {};
     if (service.__addMocks__) {
-      console.log(service.schema)
 
       Object.entries(mocks).forEach(([type, value]) => {
         resolvers[type] = {

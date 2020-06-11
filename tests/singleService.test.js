@@ -57,7 +57,6 @@ describe("Based on the data from the external service", () => {
     };
 
     const result = await executeGraphql({ query, mocks, service });
-    console.log(result)
     expect(result.data._getProduct.shippingEstimate).toEqual(0);
     expect(result.data._getProduct).toEqual({
       inStock: true,
