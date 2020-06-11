@@ -59,7 +59,6 @@ function buildRequestContext(variables, singleContext, contextsPerService) {
 
 function prepareProviderService(service) {
   let allTypeNames = [];
-
   const typeDefsForMockedService = clone(service.typeDefs);
 
   typeDefsForMockedService.definitions = typeDefsForMockedService.definitions
@@ -150,7 +149,6 @@ const setupSchema = serviceOrServices => {
 
 function setupMocks(serviceMap, mocks) {
   Object.values(serviceMap).forEach(service => {
-
 
     let resolvers = {};
     if (service.__addMocks__) {
