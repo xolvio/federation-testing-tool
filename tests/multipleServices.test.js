@@ -38,7 +38,6 @@ const resolversInventory = {
   },
   Product: {
     __resolveReference(object) {
-      console.log(object)
       return {
         ...object,
         ...inventory.find(product => product.upc === object.upc)
@@ -97,7 +96,6 @@ describe("Based on the mocked data from the external service", () => {
     };
 
     const result = await executeGraphql({ query, mocks, services });
-    console.log(result)
     expect(result.data.topProducts[0]).toEqual({
       name: "Table",
       inStock: true,
@@ -161,7 +159,6 @@ test.skip("should allow for using mutations, going across the services", async (
   };
 
   const result = await executeGraphql({ mutation, variables, mocks, services });
-  console.log(result)
   const product = result.data.addInventoryForProduct;
   expect(product.inStock).toEqual(false);
   expect(product.name).toEqual("Hello");
