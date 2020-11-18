@@ -37,7 +37,7 @@
     "graphql-tag": "^2.10.1",
     "graphql-tools": "^6.0.9",
     "jest": "^24.8.0",
-    "semantic-release": "^15.13.16"
+    "semantic-release": "^17.2.3"
   },
   "dependencies": {
     "clone": "^2.1.2",
